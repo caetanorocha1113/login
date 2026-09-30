@@ -16,6 +16,7 @@ app.post("/user", async (req, res) => {
             }
         });
         res.json(usuario);
+        console.log(res.json(usuario))
     } catch (error){
         res.status(500).json("Não foi possivel")
     };
