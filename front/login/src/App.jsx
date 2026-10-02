@@ -8,6 +8,7 @@ const [user, setUser] = useState([]);
 const [nome, setNome] = useState("");
 const [idade, setIdade] = useState("");
 const [editingId, setEditingId] = useState(null);
+const [deletingId, setDeletingId] = useState(null);
 
 async function fetchUser() {
   const res = await fetch(`http://localhost:3000/user`);
@@ -37,6 +38,35 @@ async function handleSubmit(e) {
   fetchUser();
 }
 
+async function handleDelete(user) {
+  const confirmar = window.confirm(`Excluir ${user.nome}?`);
+  if (!confirmar) return;
+
+  setDeletingId(user.id);
+
+  try {
+    const res = await fetch(`http://localhost:3000/user/${user.id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!res.ok) {
+      alert("Não foi possível excluir");
+      return;
+    }
+
+    if (editingId === user.id) {
+      setEditingId(null);
+      setNome("");
+      setIdade("");
+    }
+    await fetchUser();
+  } catch {
+    alert("Não foi possível excluir");
+  } finally {
+    setDeletingId(null);
+  }
+}
 
 useEffect(() => {
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -49,12 +79,12 @@ function handleEdit(user) {
   setIdade(user.idade);
 }
 
-const usuariosExistentes = user.map((user) =>(
-  <li key={user.id} className='user-item'>
-    <span>{user.nome}  /  {user.idade} anos </span>
+const usuariosExistentes = user.map((u) =>(
+  <li key={u.id} className='user-item'>
+    <span>{u.nome}  /  {u.idade} anos </span>
     <div>
-      <button>editar</button>
-      <button>excluir</button>
+      <button type="button" onClick={() => handleEdit(u)}>editar</button>
+      <button type="button" onClick={() => handleDelete(u)}>excluir</button>
     </div>
   </li>
 ))

@@ -66,18 +66,18 @@ app.put("/user/:id", async (req, res) => {
     }
 });
 
-app.delete("/user/:id", async (req, res) =>{
-    const {id} = req.params;
-    const usuario = await prisma.usuario.delete({
-        where:{
-            id
-        }
-    });
-    if(!usuario){
-        return res.status(404).json({error: "Usuário não encontrado"});
-    };
-    res.json(usuario);
-
+app.delete("/user/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const usuario = await prisma.usuario.delete({
+            where: {
+                id
+            }
+        });
+        res.json(usuario);
+    } catch (error) {
+        res.status(404).json({ error: "Usuário não encontrado" });
+    }
 });
 
 
